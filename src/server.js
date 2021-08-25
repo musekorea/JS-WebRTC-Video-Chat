@@ -15,15 +15,20 @@ app.get('/', (req, res) => {
 const httpServer = http.createServer(app);
 const wsServer = new WebSocketServer({ server: httpServer });
 
+const AllSockets = [];
+
 wsServer.on('connection', (socket) => {
+  AllSockets.push(socket);
   console.log(`Websocket is connected to the Browser💚`);
   socket.on('close', () => {
     console.log(`Websocket is disconnected form the Client💢`);
   });
   socket.on('message', (message, isBinary) => {
     const messageString = isBinary ? message : message.toString('utf8');
-    console.log(messageString);
-    socket.send(messageString);
+    console.log(`New message`, messageString);
+    AllSockets.forEach((eachSocket) => {
+      eachSocket.send(messageString);
+    });
   });
 });
 
