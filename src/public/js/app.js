@@ -1,33 +1,43 @@
 const messageList = document.querySelector('ul');
-const messageForm = document.querySelector('form');
-const messageInput = document.querySelector('input');
+const nicknameForm = document.querySelector('#nicknameForm');
+const nicknameInput = document.querySelector('#nicknameInput');
+const messageForm = document.querySelector('#messageForm');
+const messageInput = document.querySelector('#messageInput');
 const messageBtn = document.querySelector('button');
 
 const socket = new WebSocket(`ws://${window.location.host}`);
-messageInput.focus();
 
 socket.addEventListener('open', () => {
   console.log(`WebSocket is Connected to the Server💚`);
 });
 
+const paintMessage = (message) => {
+  const li = document.createElement('li');
+  li.innerHTML = message.data;
+  messageList.append(li);
+};
+
 socket.addEventListener('message', async (message) => {
-  if (typeof message.data === 'string') {
-    console.log(`New message :`, message.data);
-  } else {
-    const messageText = await message.data.text();
-    console.log(messageText);
-  }
+  console.log(`message from server`, message.data);
+  paintMessage(message);
 });
 
 socket.addEventListener('close', () => {
   console.log(`WebSocket is disconnected from the Server💢`);
 });
 
-const handleSubmit = (e) => {
-  messageInput.focus();
+const handleNickSubmit = (e) => {
   e.preventDefault();
-  socket.send(messageInput.value);
+  socket.send(
+    JSON.stringify({ type: 'nickname', payload: nicknameInput.value })
+  );
+};
+
+const handleMessageSubmit = (e) => {
+  e.preventDefault();
+  socket.send(JSON.stringify({ type: 'message', payload: messageInput.value }));
   messageInput.value = '';
 };
 
-messageForm.addEventListener('submit', handleSubmit);
+nicknameForm.addEventListener('submit', handleNickSubmit);
+messageForm.addEventListener('submit', handleMessageSubmit);

@@ -15,8 +15,11 @@ html(lang="en")
     main
       h2 Welcome to JOOM
       ul
-      form
-        input(type="text" placeholder="Write a message" required)
+      form(id="nicknameForm")
+        input(id="nicknameInput" type="text" placeholder="Choose your nickname" required autocomplete="off")
+        button Save
+      form(id="messageForm")
+        input(id="messageInput" type="text" placeholder="Write a message" required autocomplete="off")
         button Send
 
 

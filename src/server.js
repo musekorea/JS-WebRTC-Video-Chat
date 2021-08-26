@@ -18,17 +18,26 @@ const wsServer = new WebSocketServer({ server: httpServer });
 const AllSockets = [];
 
 wsServer.on('connection', (socket) => {
+  socket.nickname = `anonmyous`;
   AllSockets.push(socket);
   console.log(`Websocket is connected to the Browser💚`);
   socket.on('close', () => {
     console.log(`Websocket is disconnected form the Client💢`);
   });
   socket.on('message', (message, isBinary) => {
-    const messageString = isBinary ? message : message.toString('utf8');
-    console.log(`New message`, messageString);
-    AllSockets.forEach((eachSocket) => {
-      eachSocket.send(messageString);
-    });
+    const messageJSON = message.toString('utf8');
+    const messageObj = JSON.parse(messageJSON);
+    console.log(`New message`, messageObj);
+    switch (messageObj.type) {
+      case 'message':
+        AllSockets.forEach((eachSocket) => {
+          eachSocket.send(`${socket.nickname} : ${messageObj.payload}`);
+        });
+      case 'nickname':
+        console.log(messageObj.payload);
+        socket.nickname = messageObj.payload;
+    }
+    console.log(AllSockets, AllSockets.length);
   });
 });
 
