@@ -1,6 +1,6 @@
 import express from 'express';
 import http from 'http';
-import { WebSocketServer } from 'ws';
+import SocketIO from 'socket.io';
 
 const app = express();
 
@@ -13,11 +13,13 @@ app.get('/', (req, res) => {
 });
 
 const httpServer = http.createServer(app);
-const wsServer = new WebSocketServer({ server: httpServer });
+const socketServer = SocketIO(httpServer);
 
-const AllSockets = [];
+socketServer.on('connection', (socket) => {
+  console.log(socket);
+});
 
-wsServer.on('connection', (socket) => {
+/* wsServer.on('connection', (socket) => {
   socket.nickname = `anonmyous`;
   AllSockets.push(socket);
   console.log(`Websocket is connected to the Browser💚`);
@@ -33,13 +35,14 @@ wsServer.on('connection', (socket) => {
         AllSockets.forEach((eachSocket) => {
           eachSocket.send(`${socket.nickname} : ${messageObj.payload}`);
         });
+        break;
       case 'nickname':
         console.log(messageObj.payload);
         socket.nickname = messageObj.payload;
+        break;
     }
-    console.log(AllSockets, AllSockets.length);
   });
-});
+}); */
 
 httpServer.listen(8080, () => {
   console.log(`Server is running on Port 8080 💚`);

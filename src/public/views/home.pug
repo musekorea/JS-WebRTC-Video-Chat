@@ -4,9 +4,11 @@ html(lang="en")
     meta(charset="UTF-8")
     meta(http-equiv="X-UA-Compatible", content="IE=edge")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    script(defer src="/static/js/app.js")
     link(rel="stylesheet" href="https://unpkg.com/mvp.css")
     link(rel="stylesheet", href="/static/scss/temp.css")
+    script(defer src="/socket.io/socket.io.js")
+    script(defer src="/static/js/app.js")
+    
     title ZOOM Clone
 
   body 
@@ -14,13 +16,6 @@ html(lang="en")
       h1 Zoom Clone
     main
       h2 Welcome to JOOM
-      ul
-      form(id="nicknameForm")
-        input(id="nicknameInput" type="text" placeholder="Choose your nickname" required autocomplete="off")
-        button Save
-      form(id="messageForm")
-        input(id="messageInput" type="text" placeholder="Write a message" required autocomplete="off")
-        button Send
 
 
     
