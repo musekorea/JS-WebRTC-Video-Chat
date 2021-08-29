@@ -16,7 +16,10 @@ const httpServer = http.createServer(app);
 const socketServer = SocketIO(httpServer);
 
 socketServer.on('connection', (socket) => {
-  console.log(socket);
+  socket.on('enterRoom', (msg, CALLBACK) => {
+    console.log(msg);
+    setTimeout(CALLBACK, 1000);
+  });
 });
 
 /* wsServer.on('connection', (socket) => {
