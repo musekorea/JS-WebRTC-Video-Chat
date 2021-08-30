@@ -16,36 +16,14 @@ const httpServer = http.createServer(app);
 const socketServer = SocketIO(httpServer);
 
 socketServer.on('connection', (socket) => {
-  socket.on('enterRoom', (msg, CALLBACK) => {
-    console.log(msg);
-    setTimeout(CALLBACK, 1000);
+  socket.onAny((anyEvent) => {
+    console.log(`Socket Event:`, anyEvent);
+  });
+  socket.on('enterRoom', (roomName, hideRoom) => {
+    socket.join(roomName);
+    hideRoom();
   });
 });
-
-/* wsServer.on('connection', (socket) => {
-  socket.nickname = `anonmyous`;
-  AllSockets.push(socket);
-  console.log(`Websocket is connected to the Browser💚`);
-  socket.on('close', () => {
-    console.log(`Websocket is disconnected form the Client💢`);
-  });
-  socket.on('message', (message, isBinary) => {
-    const messageJSON = message.toString('utf8');
-    const messageObj = JSON.parse(messageJSON);
-    console.log(`New message`, messageObj);
-    switch (messageObj.type) {
-      case 'message':
-        AllSockets.forEach((eachSocket) => {
-          eachSocket.send(`${socket.nickname} : ${messageObj.payload}`);
-        });
-        break;
-      case 'nickname':
-        console.log(messageObj.payload);
-        socket.nickname = messageObj.payload;
-        break;
-    }
-  });
-}); */
 
 httpServer.listen(8080, () => {
   console.log(`Server is running on Port 8080 💚`);
