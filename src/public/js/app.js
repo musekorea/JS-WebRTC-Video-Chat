@@ -6,6 +6,7 @@ const roomInput = roomForm.querySelector('#roomInput');
 const msgContainer = document.querySelector('#msgContainer');
 const msgForm = msgContainer.querySelector('#msgForm');
 const msgInput = msgForm.querySelector('#msgInput');
+const chatUl = document.querySelector('#chatUl');
 msgContainer.hidden = true;
 let roomName;
 
@@ -24,3 +25,13 @@ const handleRoomSubmit = (e) => {
   roomInput.value = '';
 };
 roomForm.addEventListener('submit', handleRoomSubmit);
+
+const addMessage = (msg) => {
+  const li = document.createElement('li');
+  li.innerHTML = `${msg}`;
+  chatUl.append(li);
+};
+
+socket.on('welcomeRoom', (msg) => {
+  addMessage(`🙋‍♀️ ${msg} is Joined`);
+});

@@ -16,15 +16,20 @@ const httpServer = http.createServer(app);
 const socketServer = SocketIO(httpServer);
 
 socketServer.on('connection', (socket) => {
+  console.log(`Socket is connected 📌[${socket.id} ]`);
+  socket.on('disconnect', (reason) => {
+    console.log(reason);
+  });
   socket.onAny((anyEvent) => {
     console.log(`Socket Event:`, anyEvent);
   });
   socket.on('enterRoom', (roomName, hideRoom) => {
     socket.join(roomName);
     hideRoom();
+    socket.to(roomName).emit('welcomeRoom', socket.id);
   });
 });
 
 httpServer.listen(8080, () => {
-  console.log(`Server is running on Port 8080 💚`);
+  console.log(`Server is listening on Port 8080 💚`);
 });
