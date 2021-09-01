@@ -16,6 +16,8 @@ const hideRoom = () => {
   const roomTitle = document.createElement('h3');
   roomTitle.innerHTML = `Joining in [${roomName}] room`;
   msgContainer.prepend(roomTitle);
+  msgInput.focus();
+  msgForm.addEventListener('submit', sendMessage);
 };
 
 const handleRoomSubmit = (e) => {
@@ -24,7 +26,6 @@ const handleRoomSubmit = (e) => {
   roomName = roomInput.value;
   roomInput.value = '';
 };
-roomForm.addEventListener('submit', handleRoomSubmit);
 
 const addMessage = (msg) => {
   const li = document.createElement('li');
@@ -32,6 +33,26 @@ const addMessage = (msg) => {
   chatUl.append(li);
 };
 
+const sendMessage = (e) => {
+  e.preventDefault();
+  const message = msgInput.value;
+  socket.emit('sendMessage', msgInput.value, roomName, () => {
+    addMessage(`나: ${message}`);
+  });
+  msgInput.value = '';
+};
+
 socket.on('welcomeRoom', (msg) => {
-  addMessage(`🙋‍♀️ ${msg} is Joined`);
+  addMessage(`🙋‍♀️ ${msg} Joined`);
 });
+
+socket.on('byeRoom', (msg) => {
+  addMessage(`🧏‍♂️ ${msg} left`);
+});
+
+socket.on('newMessage', (msg) => {
+  addMessage(`다른사람: ${msg}`);
+});
+
+roomInput.focus();
+roomForm.addEventListener('submit', handleRoomSubmit);

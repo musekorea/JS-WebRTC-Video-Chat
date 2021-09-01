@@ -20,6 +20,11 @@ socketServer.on('connection', (socket) => {
   socket.on('disconnect', (reason) => {
     console.log(reason);
   });
+  socket.on('disconnecting', () => {
+    socket.rooms.forEach((room) => {
+      socket.to(room).emit('byeRoom', socket.id);
+    });
+  });
   socket.onAny((anyEvent) => {
     console.log(`Socket Event:`, anyEvent);
   });
@@ -27,6 +32,10 @@ socketServer.on('connection', (socket) => {
     socket.join(roomName);
     hideRoom();
     socket.to(roomName).emit('welcomeRoom', socket.id);
+  });
+  socket.on('sendMessage', (msg, roomName, addMessage) => {
+    socket.to(roomName).emit('newMessage', msg);
+    addMessage();
   });
 });
 
