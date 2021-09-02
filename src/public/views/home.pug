@@ -17,6 +17,10 @@ html(lang="en")
     main
       div(id="chatContainer")
         ul(id="chatUl")
+      div(id="nickContainer")
+        form(id="nickForm" autocomplete="off")
+          input(id="nickInput" placeholder="Nickname" type="text" )
+          button(id="nickBtn") Nickname
       div(id="roomContainer" )
         form(id="roomForm" autocomplete="off")
           input(id="roomInput" placeholder="Room Name" type="text" required )

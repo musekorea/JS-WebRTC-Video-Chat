@@ -16,26 +16,36 @@ const httpServer = http.createServer(app);
 const socketServer = SocketIO(httpServer);
 
 socketServer.on('connection', (socket) => {
+  console.log(socket.rooms);
   console.log(`Socket is connected 📌[${socket.id} ]`);
   socket.on('disconnect', (reason) => {
     console.log(reason);
   });
   socket.on('disconnecting', () => {
     socket.rooms.forEach((room) => {
-      socket.to(room).emit('byeRoom', socket.id);
+      socket.to(room).emit('byeRoom', socket.nickName);
     });
   });
   socket.onAny((anyEvent) => {
     console.log(`Socket Event:`, anyEvent);
   });
-  socket.on('enterRoom', (roomName, hideRoom) => {
-    socket.join(roomName);
-    hideRoom();
-    socket.to(roomName).emit('welcomeRoom', socket.id);
+  socket.on('makeNick', (nickName, showRoom) => {
+    if (nickName === '') {
+      socket.nickName = `anonymous`;
+      showRoom(socket.nickName);
+    } else {
+      socket.nickName = nickName;
+      showRoom(nickName);
+    }
   });
-  socket.on('sendMessage', (msg, roomName, addMessage) => {
-    socket.to(roomName).emit('newMessage', msg);
-    addMessage();
+  socket.on('enterRoom', (roomName, showMsg) => {
+    socket.join(roomName);
+    showMsg(socket.nickName, roomName);
+    socket.to(roomName).emit('welcomeRoom', socket.nickName);
+  });
+  socket.on('sendMessage', (msg, nickName, roomName, addMessage) => {
+    socket.to(roomName).emit('newMessage', msg, nickName);
+    addMessage(nickName);
   });
 });
 
