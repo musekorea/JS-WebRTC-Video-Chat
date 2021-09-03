@@ -15,11 +15,31 @@ app.get('/', (req, res) => {
 const httpServer = http.createServer(app);
 const socketServer = SocketIO(httpServer);
 
+let publicRooms = [];
+
+const findPublicRooms = () => {
+  publicRooms = [];
+  const sids = socketServer.sockets.adapter.sids;
+  const rooms = socketServer.sockets.adapter.rooms;
+  rooms.forEach((key, value) => {
+    if (sids.get(value) === undefined) {
+      let nickNames = [];
+      const users = rooms.get(value);
+      users.forEach((user) => {
+        nickNames.push(socketServer.sockets.sockets.get(user).nickName);
+      });
+      publicRooms.push({ roomName: value, users: nickNames });
+    }
+  });
+  return publicRooms;
+};
+
 socketServer.on('connection', (socket) => {
-  console.log(socket.rooms);
+  socketServer.sockets.emit('newRoom', findPublicRooms());
   console.log(`Socket is connected 📌[${socket.id} ]`);
   socket.on('disconnect', (reason) => {
     console.log(reason);
+    socketServer.sockets.emit('newRoom', findPublicRooms());
   });
   socket.on('disconnecting', () => {
     socket.rooms.forEach((room) => {
@@ -40,9 +60,12 @@ socketServer.on('connection', (socket) => {
   });
   socket.on('enterRoom', (roomName, showMsg) => {
     socket.join(roomName);
+    findPublicRooms();
     showMsg(socket.nickName, roomName);
     socket.to(roomName).emit('welcomeRoom', socket.nickName);
+    socketServer.sockets.emit('newRoom', findPublicRooms());
   });
+
   socket.on('sendMessage', (msg, nickName, roomName, addMessage) => {
     socket.to(roomName).emit('newMessage', msg, nickName);
     addMessage(nickName);

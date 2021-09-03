@@ -10,6 +10,7 @@ const nickContainer = document.querySelector('#nickContainer');
 const nickForm = document.querySelector('#nickForm');
 const nickInput = document.querySelector('#nickInput');
 const chatUl = document.querySelector('#chatUl');
+const userLiscContainer = document.querySelector('#usersList');
 roomContainer.hidden = true;
 msgContainer.hidden = true;
 
@@ -33,6 +34,7 @@ const showMsg = (nickName, roomName) => {
   const roomTitle = document.createElement('h3');
   roomTitle.innerHTML = `${nickName} is Joining in [${roomName}] room`;
   msgContainer.prepend(roomTitle);
+
   msgForm.addEventListener('submit', handleMsgSubmit);
 };
 
@@ -65,8 +67,8 @@ const handleMsgSubmit = (e) => {
   msgInput.value = '';
 };
 
-socket.on('welcomeRoom', (msg) => {
-  addMessage(`🙋‍♀️ ${msg} Joined`);
+socket.on('welcomeRoom', (nickName) => {
+  addMessage(`🙋‍♀️${nickName} Joined`);
 });
 
 socket.on('byeRoom', (msg) => {
@@ -75,6 +77,27 @@ socket.on('byeRoom', (msg) => {
 
 socket.on('newMessage', (msg, nickName) => {
   addMessage(`${nickName}: ${msg}`);
+  userLiscContainer.innerHTML = ``;
+});
+
+socket.on('newRoom', (rooms) => {
+  if (rooms === null || rooms === undefined) {
+    return;
+  }
+  userLiscContainer.innerHTML = ``;
+  const roomListContainer = document.querySelector('#roomListContainer');
+  const roomListUl = roomListContainer.querySelector('#roomListUl');
+  roomListUl.innerHTML = '';
+  rooms.forEach((room) => {
+    const roomListLi = document.createElement('li');
+    roomListLi.innerHTML = `room ${room.roomName} -> ${room.users.length} users`;
+    roomListUl.append(roomListLi);
+    if (roomName === room.roomName) {
+      const userList = document.createElement('span');
+      userList.innerHTML = `Users : ${room.users}`;
+      userLiscContainer.append(userList);
+    }
+  });
 });
 
 nickForm.addEventListener('submit', handleNickSubmit);
