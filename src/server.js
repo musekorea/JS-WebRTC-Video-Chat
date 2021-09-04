@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
-import SocketIO from 'socket.io';
+import { Server } from 'socket.io';
+import { instrument } from '@socket.io/admin-ui';
 
 const app = express();
 
@@ -13,7 +14,12 @@ app.get('/', (req, res) => {
 });
 
 const httpServer = http.createServer(app);
-const socketServer = SocketIO(httpServer);
+const socketServer = new Server(httpServer, {
+  cors: {
+    origin: ['https://admin.socket.io'],
+    credentials: true,
+  },
+});
 
 let publicRooms = [];
 
@@ -61,7 +67,7 @@ socketServer.on('connection', (socket) => {
   socket.on('enterRoom', (roomName, showMsg) => {
     socket.join(roomName);
     findPublicRooms();
-    showMsg(socket.nickName, roomName);
+    showMsg(socket.nickName, roomName, findPublicRooms());
     socket.to(roomName).emit('welcomeRoom', socket.nickName);
     socketServer.sockets.emit('newRoom', findPublicRooms());
   });
@@ -69,7 +75,13 @@ socketServer.on('connection', (socket) => {
   socket.on('sendMessage', (msg, nickName, roomName, addMessage) => {
     socket.to(roomName).emit('newMessage', msg, nickName);
     addMessage(nickName);
+    console.log(socketServer.sockets.adapter.rooms);
+    console.log(socketServer.sockets.adapter.rooms.get(roomName).size);
   });
+});
+
+instrument(socketServer, {
+  auth: false,
 });
 
 httpServer.listen(8080, () => {

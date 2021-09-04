@@ -15,8 +15,6 @@ html(lang="en")
     header 
       h1 Zoom Clone
     main
-      div(id="chatContainer")
-        ul(id="chatUl")
       div(id="nickContainer")
         form(id="nickForm" autocomplete="off")
           input(id="nickInput" placeholder="Nickname" type="text" )
@@ -26,10 +24,14 @@ html(lang="en")
           input(id="roomInput" placeholder="Room Name" type="text" required )
           button(id="roomBtn")  Enter Room
       div(id="msgContainer")
+        h3(id="roomTitle")
         div(id="usersList")
+        div(id="chatContainer")
+          ul(id="chatUl")
         form(id="msgForm" autocomplete="off")
           input(id ="msgInput" type="text" placeholder="message" required)
           button Send Message
+          
       div(id="roomListContainer")
         h3 Opening Rooms
         ul(id="roomListUl")

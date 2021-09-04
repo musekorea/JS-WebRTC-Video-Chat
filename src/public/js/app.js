@@ -17,27 +17,6 @@ msgContainer.hidden = true;
 let roomName;
 let nickName = 'anonymous';
 
-const showRoom = (nick) => {
-  nickName = nick;
-  nickContainer.hidden = true;
-  roomContainer.hidden = false;
-  const welcomeNick = document.createElement('h3');
-  welcomeNick.innerHTML = `👲 Welcome ${nickName}! Join the room`;
-  roomContainer.prepend(welcomeNick);
-  roomInput.focus();
-  roomForm.addEventListener('submit', handleRoomSubmit);
-};
-
-const showMsg = (nickName, roomName) => {
-  roomContainer.hidden = true;
-  msgContainer.hidden = false;
-  const roomTitle = document.createElement('h3');
-  roomTitle.innerHTML = `${nickName} is Joining in [${roomName}] room`;
-  msgContainer.prepend(roomTitle);
-
-  msgForm.addEventListener('submit', handleMsgSubmit);
-};
-
 const handleNickSubmit = (e) => {
   e.preventDefault();
   socket.emit('makeNick', nickInput.value, showRoom);
@@ -52,12 +31,6 @@ const handleRoomSubmit = (e) => {
   roomInput.value = '';
 };
 
-const addMessage = (msg) => {
-  const li = document.createElement('li');
-  li.innerHTML = `${msg}`;
-  chatUl.append(li);
-};
-
 const handleMsgSubmit = (e) => {
   e.preventDefault();
   const message = msgInput.value;
@@ -65,6 +38,38 @@ const handleMsgSubmit = (e) => {
     addMessage(`${nickName}: ${message}`);
   });
   msgInput.value = '';
+};
+const showRoom = (nick) => {
+  nickName = nick;
+  nickContainer.hidden = true;
+  roomContainer.hidden = false;
+  const welcomeNick = document.createElement('h3');
+  welcomeNick.innerHTML = `👲 Welcome ${nickName}! Please Join the room`;
+  roomContainer.prepend(welcomeNick);
+  roomInput.focus();
+  roomForm.addEventListener('submit', handleRoomSubmit);
+};
+
+const showMsg = (nickName, roomName, roomInfo) => {
+  roomContainer.hidden = true;
+  msgContainer.hidden = false;
+  const roomTitle = msgContainer.querySelector('#roomTitle');
+  roomInfo.forEach((room) => {
+    if (roomName === room.roomName) {
+      const roomUserLength = room.users.length;
+      roomTitle.innerHTML = `Room Title :  ${roomName} <span>(${roomUserLength}users)</span>`;
+    }
+  });
+
+  msgForm.addEventListener('submit', handleMsgSubmit);
+  msgInput.focus();
+};
+
+const addMessage = (msg) => {
+  const li = document.createElement('li');
+  li.innerHTML = `${msg}`;
+  chatUl.append(li);
+  msgInput.focus();
 };
 
 socket.on('welcomeRoom', (nickName) => {
@@ -93,9 +98,10 @@ socket.on('newRoom', (rooms) => {
     roomListLi.innerHTML = `room ${room.roomName} -> ${room.users.length} users`;
     roomListUl.append(roomListLi);
     if (roomName === room.roomName) {
-      const userList = document.createElement('span');
-      userList.innerHTML = `Users : ${room.users}`;
-      userLiscContainer.append(userList);
+      const userList = document.querySelector('#usersList');
+      const userSpan = document.createElement('span');
+      userSpan.innerHTML = `Participants : ${room.users}`;
+      userList.append(userSpan);
     }
   });
 });
