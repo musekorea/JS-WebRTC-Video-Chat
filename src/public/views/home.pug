@@ -15,27 +15,9 @@ html(lang="en")
     header 
       h1 Zoom Clone
     main
-      div(id="nickContainer")
-        form(id="nickForm" autocomplete="off")
-          input(id="nickInput" placeholder="Nickname" type="text" )
-          button(id="nickBtn") Nickname
-      div(id="roomContainer" )
-        form(id="roomForm" autocomplete="off")
-          input(id="roomInput" placeholder="Room Name" type="text" required )
-          button(id="roomBtn")  Enter Room
-      div(id="msgContainer")
-        h3(id="roomTitle")
-        div(id="usersList")
-        div(id="chatContainer")
-          ul(id="chatUl")
-        form(id="msgForm" autocomplete="off")
-          input(id ="msgInput" type="text" placeholder="message" required)
-          button Send Message
+      div(id="myStream")
+        video(id="myFace" autoplay, playsinline, width="400", height="400")
+        button(id="audioSwitch") Audio Off
+        button(id="videoSwitch") Video Off
+        select(id="cameras")
           
-      div(id="roomListContainer")
-        h3 Opening Rooms
-        ul(id="roomListUl")
-
-
-
-    
