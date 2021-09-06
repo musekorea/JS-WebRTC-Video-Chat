@@ -17,7 +17,9 @@ const getDevices = async (selectedCamera) => {
     });
     if (selectedCamera) {
       document.querySelectorAll('option').forEach((camera) => {
+        console.log(selectedCamera, camera.value, camera.selected);
         if (selectedCamera == camera.value) {
+          camera.selected = true;
         } else {
           camera.selected = false;
         }
@@ -86,7 +88,7 @@ const handleCameraChange = () => {
 
 audioBtn.addEventListener('click', handleAudioOnOff);
 videoBtn.addEventListener('click', handleVideoOnOff);
-cameraSelect.addEventListener('input', handleCameraChange);
+cameraSelect.addEventListener('change', handleCameraChange);
 
 getMedia();
 getDevices();
