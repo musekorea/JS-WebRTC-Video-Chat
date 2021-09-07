@@ -1,9 +1,38 @@
 const socket = io();
 
+const roomContainer = document.querySelector('#roomContainer');
+const roomForm = document.querySelector('#roomForm');
+const call = document.querySelector('#call');
 const myFace = document.querySelector('#myFace');
 const audioBtn = document.querySelector('#audioSwitch');
 const videoBtn = document.querySelector('#videoSwitch');
 const cameraSelect = document.querySelector('#cameras');
+
+//===============ROOMS==============================//
+call.hidden = true;
+
+let roomName;
+
+const handleRoomSubmit = (e) => {
+  e.preventDefault();
+  const roomInput = document.querySelector('#roomInput');
+  socket.emit('join_room', roomInput.value, startMediaDevices);
+  roomName = roomInput.value;
+  roomInput.value = '';
+};
+
+const startMediaDevices = () => {
+  roomContainer.hidden = true;
+  call.hidden = false;
+  getMedia();
+};
+
+roomForm.addEventListener('submit', handleRoomSubmit);
+socket.on('welcome', () => {
+  console.log(`someone joined`);
+});
+
+//=================CALLS===============================//
 
 let myStream;
 let audioOff = false;
@@ -89,6 +118,4 @@ const handleCameraChange = () => {
 audioBtn.addEventListener('click', handleAudioOnOff);
 videoBtn.addEventListener('click', handleVideoOnOff);
 cameraSelect.addEventListener('change', handleCameraChange);
-
-getMedia();
 getDevices();

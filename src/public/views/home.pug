@@ -15,9 +15,15 @@ html(lang="en")
     header 
       h1 Zoom Clone
     main
-      div(id="myStream")
-        video(id="myFace" autoplay, playsinline, width="400", height="400")
-        button(id="audioSwitch") Audio Off
-        button(id="videoSwitch") Video Off
-        select(id="cameras")
+      div(id="roomContainer")
+        form(id="roomForm")
+          input(id="roomInput" type="text", placeholder="Room Name", required)
+          button Enter Room
+
+      div(id="call")
+        div(id="myStream")
+          video(id="myFace" autoplay, playsinline, width="400", height="400")
+          button(id="audioSwitch") Audio Off
+          button(id="videoSwitch") Video Off
+          select(id="cameras")
           

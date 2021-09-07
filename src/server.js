@@ -18,6 +18,14 @@ app.get('/*', (req, res) => {
 const httpServer = http.createServer(app);
 const socketServer = new Server(httpServer);
 
+socketServer.on('connect', (socket) => {
+  socket.on('join_room', (roomName, startMediaDevices) => {
+    socket.join(roomName);
+    startMediaDevices();
+    socket.to(roomName).emit('welcome');
+  });
+});
+
 httpServer.listen(8080, () => {
   console.log(`Server is listening on Port 8080 💚`);
 });
