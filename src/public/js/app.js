@@ -21,17 +21,25 @@ const handleRoomSubmit = (e) => {
   roomInput.value = '';
 };
 
-const startMediaDevices = () => {
+const startMediaDevices = async () => {
   roomContainer.hidden = true;
   call.hidden = false;
-  getMedia();
+  await getMedia();
+  RTCSignaling();
 };
 
 roomForm.addEventListener('submit', handleRoomSubmit);
-socket.on('welcome', () => {
+
+socket.on('welcome', async () => {
   console.log(`someone joined`);
+  const offer = await peerConnection.createOffer();
+  peerConnection.setLocalDescription(offer);
+  socket.emit('offer', offer, roomName);
 });
 
+socket.on('offer', (offer) => {
+  console.log(`offer comes`, offer);
+});
 //=================CALLS===============================//
 
 let myStream;
@@ -119,3 +127,13 @@ audioBtn.addEventListener('click', handleAudioOnOff);
 videoBtn.addEventListener('click', handleVideoOnOff);
 cameraSelect.addEventListener('change', handleCameraChange);
 getDevices();
+
+//===============WEB RTC=====================///
+let peerConnection;
+
+const RTCSignaling = () => {
+  peerConnection = new RTCPeerConnection();
+  myStream.getTracks().forEach((track) => {
+    peerConnection.addTrack(track, myStream);
+  });
+};
