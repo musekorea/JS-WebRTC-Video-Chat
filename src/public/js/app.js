@@ -13,10 +13,11 @@ call.hidden = true;
 
 let roomName;
 
-const handleRoomSubmit = (e) => {
+const handleRoomSubmit = async (e) => {
   e.preventDefault();
   const roomInput = document.querySelector('#roomInput');
-  socket.emit('join_room', roomInput.value, startMediaDevices);
+  await startMediaDevices();
+  socket.emit('join_room', roomInput.value);
   roomName = roomInput.value;
   roomInput.value = '';
 };
@@ -28,19 +29,39 @@ const startMediaDevices = async () => {
   RTCSignaling();
 };
 
-roomForm.addEventListener('submit', handleRoomSubmit);
-
 socket.on('welcome', async () => {
   console.log(`someone joined`);
   const offer = await peerConnection.createOffer();
   peerConnection.setLocalDescription(offer);
   socket.emit('offer', offer, roomName);
+  await console.log('sent offer');
 });
 
-socket.on('offer', (offer) => {
-  console.log(`offer comes`, offer);
+socket.on('offer', async (offer) => {
+  console.log('offer comes');
+  peerConnection.setRemoteDescription(offer);
+  const answer = await peerConnection.createAnswer();
+  peerConnection.setLocalDescription(answer);
+  socket.emit('answer', answer, roomName);
+  console.log('sent answer');
 });
-//=================CALLS===============================//
+socket.on('answer', (answer) => {
+  console.log('answer comes');
+  peerConnection.setRemoteDescription(answer);
+});
+
+//===============WEB RTC=====================///
+
+let peerConnection;
+
+const RTCSignaling = () => {
+  peerConnection = new RTCPeerConnection();
+  myStream.getTracks().forEach((track) => {
+    peerConnection.addTrack(track, myStream);
+  });
+};
+
+//=================CAMERA===============================//
 
 let myStream;
 let audioOff = false;
@@ -123,17 +144,8 @@ const handleCameraChange = () => {
   getDevices(cameraSelect.value);
 };
 
+roomForm.addEventListener('submit', handleRoomSubmit);
 audioBtn.addEventListener('click', handleAudioOnOff);
 videoBtn.addEventListener('click', handleVideoOnOff);
 cameraSelect.addEventListener('change', handleCameraChange);
 getDevices();
-
-//===============WEB RTC=====================///
-let peerConnection;
-
-const RTCSignaling = () => {
-  peerConnection = new RTCPeerConnection();
-  myStream.getTracks().forEach((track) => {
-    peerConnection.addTrack(track, myStream);
-  });
-};
