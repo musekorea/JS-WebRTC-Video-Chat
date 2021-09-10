@@ -38,7 +38,7 @@ socket.on('welcome', async () => {
 });
 
 socket.on('offer', async (offer) => {
-  console.log('offer comes');
+  console.log('received offer');
   peerConnection.setRemoteDescription(offer);
   const answer = await peerConnection.createAnswer();
   peerConnection.setLocalDescription(answer);
@@ -46,8 +46,12 @@ socket.on('offer', async (offer) => {
   console.log('sent answer');
 });
 socket.on('answer', (answer) => {
-  console.log('answer comes');
+  console.log('received answer');
   peerConnection.setRemoteDescription(answer);
+});
+socket.on('ice', (ice) => {
+  console.log('received candidate from Server');
+  peerConnection.addIceCandidate(ice);
 });
 
 //===============WEB RTC=====================///
@@ -56,9 +60,22 @@ let peerConnection;
 
 const RTCSignaling = () => {
   peerConnection = new RTCPeerConnection();
+  peerConnection.addEventListener('icecandidate', handleICECandidate);
+  peerConnection.addEventListener('addstream', handleAddStream);
   myStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, myStream);
   });
+};
+
+const handleICECandidate = (data) => {
+  console.log('received ICE Candidate');
+  console.log(data);
+  socket.emit('ice', data.candidate, roomName);
+};
+
+const handleAddStream = (data) => {
+  const yourFace = document.querySelector('#yourFace');
+  yourFace.srcObject = data.stream;
 };
 
 //=================CAMERA===============================//
