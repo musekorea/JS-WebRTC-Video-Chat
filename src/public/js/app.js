@@ -34,7 +34,7 @@ socket.on('welcome', async () => {
   const offer = await peerConnection.createOffer();
   peerConnection.setLocalDescription(offer);
   socket.emit('offer', offer, roomName);
-  await console.log('sent offer');
+  console.log('sent offer');
 });
 
 socket.on('offer', async (offer) => {
@@ -58,11 +58,23 @@ socket.on('ice', (ice) => {
 
 let peerConnection;
 
-const RTCSignaling = () => {
-  peerConnection = new RTCPeerConnection();
+const RTCSignaling = async () => {
+  peerConnection = new RTCPeerConnection({
+    iceServers: [
+      {
+        urls: [
+          'stun:stun.l.google.com:19302',
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+          'stun:stun3.l.google.com:19302',
+          'stun:stun4.l.google.com:19302',
+        ],
+      },
+    ],
+  });
   peerConnection.addEventListener('icecandidate', handleICECandidate);
   peerConnection.addEventListener('addstream', handleAddStream);
-  myStream.getTracks().forEach((track) => {
+  await myStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, myStream);
   });
 };
@@ -156,9 +168,19 @@ const handleVideoOnOff = () => {
   }
 };
 
-const handleCameraChange = () => {
-  getMedia(cameraSelect.value);
-  getDevices(cameraSelect.value);
+const handleCameraChange = async () => {
+  await getMedia(cameraSelect.value);
+  await getDevices(cameraSelect.value);
+  const devices = peerConnection.getSenders();
+  const myAudioTrack = await myStream.getAudioTracks()[0];
+  const myVideoTrack = await myStream.getVideoTracks()[0];
+  devices.forEach((device) => {
+    if (device.track.kind == 'audio') {
+      device.replaceTrack(myAudioTrack);
+    } else {
+      device.replaceTrack(myVideoTrack);
+    }
+  });
 };
 
 roomForm.addEventListener('submit', handleRoomSubmit);
