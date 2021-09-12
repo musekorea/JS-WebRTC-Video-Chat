@@ -3,3 +3,135 @@
   margin: 0;
   box-sizing: border-box;
 }
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  background-color: wheat;
+}
+h1 {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  letter-spacing: 1.2px;
+  border-bottom: 1px solid black;
+}
+h1 span {
+  color: red;
+  font-size: 20px;
+}
+#roomForm {
+  box-shadow: 6px 6px 9px rgba(0, 0, 0, 0.5),
+    inset 6px 6px 6px rgba(0, 0, 0, 0.1);
+}
+#roomInput {
+  border: none;
+  outline: none;
+  padding: 12px;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+#roomForm button {
+  padding: 12px;
+  border: none;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+#call {
+  position: relative;
+  width: 100vw;
+  top: -130px;
+}
+.videoContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+#myStream {
+  position: relative;
+}
+#myFace {
+  margin: 0;
+}
+.btns {
+  display: flex;
+  width: 100%;
+  position: absolute;
+  bottom: 18px;
+  justify-content: center;
+}
+select {
+  width: 70%;
+  padding: 5px 10px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  box-shadow: inset 6px 6px 6px rgba(0, 0, 0, 0.2);
+  margin-right: 5px;
+  border-radius: 5px;
+}
+#audioSwitch,
+#videoSwitch {
+  border: none;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  padding: 0 2px;
+  margin: 0 5px;
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.2),
+    inset 6px 6px 6px rgba(0, 0, 0, 0.1);
+  color: wheat;
+  font-weight: lighter;
+}
+#chatContainer {
+  position: absolute;
+  bottom: 55px;
+  height: 30%;
+  width: 100%;
+  overflow-y: auto;
+}
+ul {
+  width: 55%;
+  margin: 0 auto;
+}
+ul li {
+  padding: 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  list-style: none;
+}
+#chatForm {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#chatInput {
+  width: 50%;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: none;
+  outline: none;
+}
+#chatForm button {
+  padding: 10px;
+  border: none;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+}
+li.you {
+  color: rgba(255, 0, 0, 0.8);
+  font-weight: bolder;
+  text-align: end;
+}
+li.me {
+  color: rgba(0, 0, 0, 0.7);
+  font-weight: bolder;
+}

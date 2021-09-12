@@ -2,20 +2,31 @@ const socket = io();
 
 const roomContainer = document.querySelector('#roomContainer');
 const roomForm = document.querySelector('#roomForm');
+const roomInput = document.querySelector('#roomInput');
 const call = document.querySelector('#call');
 const myFace = document.querySelector('#myFace');
 const audioBtn = document.querySelector('#audioSwitch');
 const videoBtn = document.querySelector('#videoSwitch');
 const cameraSelect = document.querySelector('#cameras');
+const chatContainer = document.querySelector('#chatContainer');
+const chatForm = document.querySelector('#chatForm');
+const chatInput = document.querySelector('#chatInput');
+const ul = document.querySelector('ul');
 
 //===============ROOMS==============================//
-call.hidden = true;
+call.style.display = 'none';
+chatContainer.style.display = 'none';
+roomInput.focus();
 
 let roomName;
+let peerConnection;
+let dataChannel;
+let myStream;
+let audioOff = false;
+let videoOff = false;
 
 const handleRoomSubmit = async (e) => {
   e.preventDefault();
-  const roomInput = document.querySelector('#roomInput');
   await startMediaDevices();
   socket.emit('join_room', roomInput.value);
   roomName = roomInput.value;
@@ -23,14 +34,24 @@ const handleRoomSubmit = async (e) => {
 };
 
 const startMediaDevices = async () => {
-  roomContainer.hidden = true;
-  call.hidden = false;
+  roomContainer.remove();
+  call.style.display = 'block';
+  chatContainer.style.display = 'block';
+  chatInput.focus();
   await getMedia();
   RTCSignaling();
 };
 
 socket.on('welcome', async () => {
   console.log(`someone joined`);
+  dataChannel = peerConnection.createDataChannel('chat');
+  dataChannel.addEventListener('message', (e) => {
+    const li = document.createElement('li');
+    li.className = 'you';
+    li.innerHTML = `you : ${e.data}`;
+    ul.append(li);
+  });
+  console.log('Made data channel');
   const offer = await peerConnection.createOffer();
   peerConnection.setLocalDescription(offer);
   socket.emit('offer', offer, roomName);
@@ -39,6 +60,16 @@ socket.on('welcome', async () => {
 
 socket.on('offer', async (offer) => {
   console.log('received offer');
+  peerConnection.addEventListener('datachannel', (e) => {
+    dataChannel = e.channel;
+    dataChannel.addEventListener('message', (e) => {
+      console.log(e.data);
+      const li = document.createElement('li');
+      li.className = 'you';
+      li.innerHTML = `you : ${e.data}`;
+      ul.append(li);
+    });
+  });
   peerConnection.setRemoteDescription(offer);
   const answer = await peerConnection.createAnswer();
   peerConnection.setLocalDescription(answer);
@@ -55,8 +86,6 @@ socket.on('ice', (ice) => {
 });
 
 //===============WEB RTC=====================///
-
-let peerConnection;
 
 const RTCSignaling = async () => {
   peerConnection = new RTCPeerConnection({
@@ -81,7 +110,6 @@ const RTCSignaling = async () => {
 
 const handleICECandidate = (data) => {
   console.log('received ICE Candidate');
-  console.log(data);
   socket.emit('ice', data.candidate, roomName);
 };
 
@@ -91,10 +119,6 @@ const handleAddStream = (data) => {
 };
 
 //=================CAMERA===============================//
-
-let myStream;
-let audioOff = false;
-let videoOff = false;
 
 const getDevices = async (selectedCamera) => {
   try {
@@ -126,11 +150,11 @@ const getDevices = async (selectedCamera) => {
 
 const getMedia = async (selectedCamera) => {
   const initialConstrain = {
-    audio: true,
+    audio: false,
     video: { facingMode: 'user' ? 'user' : true },
   };
   const newConstrain = {
-    audio: true,
+    audio: false,
     video: { deviceId: selectedCamera },
   };
   try {
@@ -182,8 +206,31 @@ const handleCameraChange = async () => {
     }
   });
 };
+//==========CHAT==================//
 
+const handleChatSubmit = (e) => {
+  e.preventDefault();
+  chatInput.focus();
+  dataChannel.send(chatInput.value);
+  const li = document.createElement('li');
+  li.className = 'me';
+  li.innerHTML = `me : ${chatInput.value}`;
+  ul.append(li);
+  chatInput.value = '';
+};
+const checkScroll = () => {
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+};
+chatForm.addEventListener('keydown', () => {
+  checkScroll();
+});
+chatForm.addEventListener('keyup', () => {
+  checkScroll();
+});
+
+//==========EVENT=================//
 roomForm.addEventListener('submit', handleRoomSubmit);
+chatForm.addEventListener('submit', handleChatSubmit);
 audioBtn.addEventListener('click', handleAudioOnOff);
 videoBtn.addEventListener('click', handleVideoOnOff);
 cameraSelect.addEventListener('change', handleCameraChange);

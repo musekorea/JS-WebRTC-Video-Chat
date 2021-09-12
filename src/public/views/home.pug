@@ -4,7 +4,6 @@ html(lang="en")
     meta(charset="UTF-8")
     meta(http-equiv="X-UA-Compatible", content="IE=edge")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    link(rel="stylesheet" href="https://unpkg.com/mvp.css")
     link(rel="stylesheet", href="/static/scss/temp.css")
     script(defer src="/socket.io/socket.io.js")
     script(defer src="/static/js/app.js")
@@ -12,7 +11,8 @@ html(lang="en")
 
   body 
     header 
-      h1 Zoom Clone
+      h1 Code:Me 
+        span WebRTC
     main
       div(id="roomContainer")
         form(id="roomForm")
@@ -20,11 +20,17 @@ html(lang="en")
           button Enter Room
 
       div(id="call")
-        div(id="myStream")
-          video(id="myFace" autoplay, playsinline, width="400", height="400")
-          button(id="audioSwitch") Audio Off
-          button(id="videoSwitch") Video Off
-          select(id="cameras")
-        div(id="peerStream" )
-          video(id="yourFace" autoplay, playsinline, width="400", height="400")
-          
+        div(class="videoContainer")
+          div(id="myStream")
+            video(id="myFace" autoplay, playsinline, width="400", height="400")
+            div(class="btns")
+              select(id="cameras")
+              button(id="audioSwitch") Audio Off
+              button(id="videoSwitch") Video Off
+          div(id="peerStream" )
+            video(id="yourFace" autoplay, playsinline, width="400", height="400")
+      div(id="chatContainer")
+        ul
+        form(id="chatForm" autocomplete="off") 
+          input(id="chatInput" type="text", placeholder="chat")
+          button Submit
