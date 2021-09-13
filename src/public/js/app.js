@@ -150,11 +150,11 @@ const getDevices = async (selectedCamera) => {
 
 const getMedia = async (selectedCamera) => {
   const initialConstrain = {
-    audio: false,
+    audio: true,
     video: { facingMode: 'user' ? 'user' : true },
   };
   const newConstrain = {
-    audio: false,
+    audio: true,
     video: { deviceId: selectedCamera },
   };
   try {
