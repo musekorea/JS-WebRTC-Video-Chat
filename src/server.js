@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 
 const app = express();
 
-app.use('/static', express.static(__dirname + '/public'));
+app.use('/assets', express.static(process.cwd() + '/assets'));
 app.set('view engine', 'pug');
 app.set('views', process.cwd() + '/src/public/views');
 

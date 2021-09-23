@@ -1,3 +1,6 @@
+import '../scss/temp.css';
+import 'regenerator-runtime';
+
 const socket = io();
 
 const roomContainer = document.querySelector('#roomContainer');
