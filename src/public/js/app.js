@@ -161,17 +161,11 @@ const getMedia = async (selectedCamera) => {
     video: { deviceId: selectedCamera },
   };
   try {
-    navigator.getUserMedia = myStream =
-      navigator.getUserMedia ||
-      navigator.webkitGetUserMedia ||
-      navigator.mozGetUserMedia;
     if (navigator.getUserMedia) {
       await navigator.mediaDevices.getUserMedia(
         selectedCamera ? newConstrain : initialConstrain
       );
       myFace.srcObject = myStream;
-    } else {
-      console.log(`getUserMedia not supported`);
     }
   } catch (e) {
     console.log(e);
