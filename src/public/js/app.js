@@ -161,7 +161,7 @@ const getMedia = async (selectedCamera) => {
     video: { deviceId: selectedCamera },
   };
   try {
-    await navigator.mediaDevices.getUserMedia(
+    myStream = await navigator.mediaDevices.getUserMedia(
       selectedCamera ? newConstrain : initialConstrain
     );
     myFace.srcObject = myStream;
