@@ -161,12 +161,10 @@ const getMedia = async (selectedCamera) => {
     video: { deviceId: selectedCamera },
   };
   try {
-    if (navigator.getUserMedia) {
-      await navigator.mediaDevices.getUserMedia(
-        selectedCamera ? newConstrain : initialConstrain
-      );
-      myFace.srcObject = myStream;
-    }
+    await navigator.mediaDevices.getUserMedia(
+      selectedCamera ? newConstrain : initialConstrain
+    );
+    myFace.srcObject = myStream;
   } catch (e) {
     console.log(e);
   }
